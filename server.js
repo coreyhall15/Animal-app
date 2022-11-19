@@ -34,7 +34,7 @@ mongoose.connection
 
 const{Schema, model } = mongoose ///Destructuring grabbing model and Schema off mongoose
 
-///Make fruit Schema
+///Make Animal Schema
 const animalSchema = new Schema({
     species: String,
     location: String,
@@ -73,11 +73,11 @@ app.get('/animals/seed', (req, res)=> {
         { species: "Tyrannosarurs", location: "Alaska", extinct: true, lifeExpectancty: 28 },
         { species: "Lion", location: "Canada", extinct: false, lifeExpectancty: 35 },
       ]
-
-      //Delete all fruits
+    
+      //Delete all Animals
       Animal.deleteMany({}, (err, data) => {
-        //create new fruits
-        Animals.create(startingAnimals, (err, data)=> {
+        //create new Animals
+        Animal.create(startingAnimals, (err, data)=> {
             res.json(data)
         })
       })
@@ -87,8 +87,8 @@ app.get('/animals/seed', (req, res)=> {
 //Index Routes
 app.get('/animals', (req, res) => {
     //get all animals from mango and send them back
-    Animals.find({}) 
-        .then((animalss) => {
+    Animal.find({}) 
+        .then((animals) => {
             //res.json(fruits)
             res.render('animals/index.ejs', {animals})
         })
@@ -103,7 +103,7 @@ app.get("/animals/new", (req, res) => {
 //post route
 app.post('/animals' , (req, res) =>{
     req.body.extinct = req.body.extinct === 'on' ? true : false
-    Fruit.create(req.body, (err, createdFruit) =>{
+    Animal.create(req.body, (err, createdAnimal) =>{
         console.log(createdAnimal)
         res.redirect('/animals')
     })
@@ -111,9 +111,9 @@ app.post('/animals' , (req, res) =>{
 
 app.get('/fruits/:id', (req, res) => {
    //go and get fruit from database
-    Fruit.findById(req.params.id)
-    .then((fruit) =>{
-        res.render('fruits/show.ejs', {fruit})
+    Animal.findById(req.params.id)
+    .then((animal) =>{
+        res.render('animals/show.ejs', {animal})
     })
     
 })
