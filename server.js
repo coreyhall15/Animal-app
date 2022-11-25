@@ -1,9 +1,12 @@
+///////////////////////////////
+////Dependecies
+///////////////////////////////
+
 require("dotenv").config() // load env files
 const express = require('express') //bring in express to make our app
 const morgan = require('morgan') // nice ledger for our request
 methodOverride = require('method-override')
 const mongoose = require('mongoose') // gives us that db connection and cool methods for CRUD
-const PORT = process.env.PORT
 
 const app = express()
 
@@ -71,7 +74,10 @@ app.get('/animals/seed', (req, res)=> {
         { species: "Lion", location: "Africa", extinct: false, lifeExpectancty: 23 },
         { species: "Elephant", location: "Africa", extinct: false, lifeExpectancty: 65 },
         { species: "Tyrannosarurs", location: "Alaska", extinct: true, lifeExpectancty: 28 },
-        { species: "Lion", location: "Canada", extinct: false, lifeExpectancty: 35 },
+        { species: "Bald Eagle", location: "United States", extinct: false, lifeExpectancty: 30 },
+        { species: "Zebra", location: "Africa", extinct: false, lifeExpectancty: 25 },
+        { species: "Orca", location: "Antartica", extinct: false, lifeExpectancty: 50 },
+        { species: "Alligator", location: "Florida", extinct: false, lifeExpectancty: 50 },
       ]
     
       //Delete all Animals
@@ -109,7 +115,9 @@ app.post('/animals' , (req, res) =>{
     })
 })
 
-app.get('/fruits/:id', (req, res) => {
+
+//show route
+app.get('/animals/:id', (req, res) => {
    //go and get fruit from database
     Animal.findById(req.params.id)
     .then((animal) =>{
@@ -118,8 +126,39 @@ app.get('/fruits/:id', (req, res) => {
     
 })
 
+//edit route
+app.get('animals/:id/edit', (req, res) => {
+    const id = req.params.id
+    //get the animal from the database
+    Animal.findById.apply(id, (err, animal) => {
+        res.render('animals/edit.ejs', {animal})
+    })
+})
+
+//update route
+app.put('/animal/:id', (req , res) => {
+    const id = req.params.id
+
+    req.body.extinct = req.body.extinct === "on" ? true : false
+
+    Animal.findByIdAndUpdate(id, req.body, {new: true}, (err, animal) =>{
+        res.redirect("/animals")
+    })
+})
+
+
+//destroy route
+app.delete('/animals/:id', (req , res) => {
+    const id = req.params.id
+
+    Animal.findByIdAndRemove(id, (err, animal) => {
+        res.redirect('/amimals')
+    })
+})
 ////////////////////////////////////////////
 // Server Listener
 ////////////////////////////////////////////
+
+const PORT = process.env.PORT
 
 app.listen(PORT, () => console.log('Bands will make her dance on port: ${PORT}'))
