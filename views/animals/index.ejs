@@ -8,6 +8,7 @@
                 <div>
                     <a href="/animals/new"><button>Create New Animal</button></a>
                     <% for (animal of animals) { %>
+
                         <article>
                             <a href="/animals/<%= animal._id %>">
                                 <h2>
@@ -15,6 +16,7 @@
                                 </h2>
                             </a>
                         </article>
+
                         <% } %>
                 </div>
             </main>

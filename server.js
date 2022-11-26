@@ -1,52 +1,15 @@
-///////////////////////////////
-////Dependecies
-///////////////////////////////
-
 require("dotenv").config() // load env files
 const express = require('express') //bring in express to make our app
 const morgan = require('morgan') // nice ledger for our request
 methodOverride = require('method-override')
 const mongoose = require('mongoose') // gives us that db connection and cool methods for CRUD
-
+const Animal = ('../models/animal')
+const PORT = process.env.PORT
+const AnimalRouter = require('./controllers/animal')
 const app = express()
 
-/////////////////////////////////
-//////////Database Connection
-/////////////////////////////////
-
-const DATABASE_URL = process.env.DATABASE_URL
-const CONFIG = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}
 
 
-//Establish our connection
-mongoose.connect(DATABASE_URL, CONFIG);
-
-// Log connction events from mongoose
-mongoose.connection
-    .on("open", ()=> console.log('Mongoose connected'))
-    .on("closed", ()=> console.log('Mongoose disconnected'))
-    .on("error", ()=> console.log('Mongoose error, error'))
-
-
-/////////////////////////////////
-//////////Fruits Model
-////////////////////////////////
-
-const{Schema, model } = mongoose ///Destructuring grabbing model and Schema off mongoose
-
-///Make Animal Schema
-const animalSchema = new Schema({
-    species: String,
-    location: String,
-    extinct: Boolean,
-    lifeExpectancty: Number,
-})
-
-//Make Animal
-const Animal = model("Animal", animalSchema)
 
 
 /////////////////////////////////
@@ -57,108 +20,18 @@ app.use(morgan("tiny"))//logging
 app.use(methodOverride("_method"))//override for put and delete requests from forms
 app.use(express.urlencoded({extended: true}))//parse urlencoded request bodies
 app.use(express.static("public"))//use static files in a public directory
+app.use('/animals',AnimalRouter)
 
 
 
-////////////////////////////////////////////
-// Routes
-////////////////////////////////////////////
-app.get("/", (req, res) => {
-    res.send("your server is running... better catch it.")
-})
-
-app.get('/animals/seed', (req, res)=> {
-    //define data we want in the folder
-    const startingAnimals = 
-    [
-        { species: "Lion", location: "Africa", extinct: false, lifeExpectancty: 23 },
-        { species: "Elephant", location: "Africa", extinct: false, lifeExpectancty: 65 },
-        { species: "Tyrannosarurs", location: "Alaska", extinct: true, lifeExpectancty: 28 },
-        { species: "Bald Eagle", location: "United States", extinct: false, lifeExpectancty: 30 },
-        { species: "Zebra", location: "Africa", extinct: false, lifeExpectancty: 25 },
-        { species: "Orca", location: "Antartica", extinct: false, lifeExpectancty: 50 },
-        { species: "Alligator", location: "Florida", extinct: false, lifeExpectancty: 50 },
-      ]
-    
-      //Delete all Animals
-      Animal.deleteMany({}, (err, data) => {
-        //create new Animals
-        Animal.create(startingAnimals, (err, data)=> {
-            res.json(data)
-        })
-      })
-})
 
 
-//Index Routes
-app.get('/animals', (req, res) => {
-    //get all animals from mango and send them back
-    Animal.find({}) 
-        .then((animals) => {
-            //res.json(fruits)
-            res.render('animals/index.ejs', {animals})
-        })
-    
-})
-
-// new route
-app.get("/animals/new", (req, res) => {
-    res.render('animals/new.ejs')
-})
-
-//post route
-app.post('/animals' , (req, res) =>{
-    req.body.extinct = req.body.extinct === 'on' ? true : false
-    Animal.create(req.body, (err, createdAnimal) =>{
-        console.log(createdAnimal)
-        res.redirect('/animals')
-    })
-})
 
 
-//show route
-app.get('/animals/:id', (req, res) => {
-   //go and get fruit from database
-    Animal.findById(req.params.id)
-    .then((animal) =>{
-        res.render('animals/show.ejs', {animal})
-    })
-    
-})
-
-//edit route
-app.get('animals/:id/edit', (req, res) => {
-    const id = req.params.id
-    //get the animal from the database
-    Animal.findById.apply(id, (err, animal) => {
-        res.render('animals/edit.ejs', {animal})
-    })
-})
-
-//update route
-app.put('/animal/:id', (req , res) => {
-    const id = req.params.id
-
-    req.body.extinct = req.body.extinct === "on" ? true : false
-
-    Animal.findByIdAndUpdate(id, req.body, {new: true}, (err, animal) =>{
-        res.redirect("/animals")
-    })
-})
 
 
-//destroy route
-app.delete('/animals/:id', (req , res) => {
-    const id = req.params.id
-
-    Animal.findByIdAndRemove(id, (err, animal) => {
-        res.redirect('/amimals')
-    })
-})
 ////////////////////////////////////////////
 // Server Listener
 ////////////////////////////////////////////
-
-const PORT = process.env.PORT
 
 app.listen(PORT, () => console.log('Bands will make her dance on port: ${PORT}'))

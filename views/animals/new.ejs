@@ -11,30 +11,35 @@
                 <form action="/animals" method="post">
                     <fieldset>
                         <legend>Create a New Animal</legend>
-                      <label>
-                        NAME:<input
-                          type="text"
-                          name="name"
-                          placeholder="enter animal name"
-                        />
-                      </label>
-                      <label>
-                        LIFE EXPECTANCY:<input
-                          type="text"
-                          name="life expectancy"
-                          placeholder="enter life expectancy"
-                        />
-                      </label>
-                      <label>
-                        LOCATION:<input
-                          type="text"
-                          name="location"
-                          placeholder="enter animal location"
-                        />
-                      </label>
-                      <label>
-                        EXTINCT:<input type="checkbox" name="extinct" />
-                      </label>
+                        <label>
+                          NAME:<input
+                            type="text"
+                            name="name"
+                            value="<%= animal.name %>"
+                            placeholder="enter animal name"
+                          />
+                        </label>
+                        <label>
+                          REGION:<input
+                            type="text"
+                            name="region"
+                            value="<%= animal.region %>"
+                            placeholder="enter animal region"
+                          />
+                        </label>
+                        <label>
+                          EXTINCT:<input type="checkbox" name="EXTINCT" <%=
+                          animal.extinct ? "checked" : "" %> 
+                          />
+                        </label>
+                        <label>
+                          LIFE EXPECTANCY:<input
+                            type="number"
+                            name="expectancy"
+                            value="<%= animal.lifeExpectancy %>"
+                            placeholder="enter life expectancy"
+                            />
+                        </label>
                     </fieldset>
                     <input type="submit" value="create new animal" />
                   </form>
