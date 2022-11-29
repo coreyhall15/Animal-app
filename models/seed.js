@@ -15,12 +15,13 @@ mongoose.connection.on('open', () => {
         { name: "Mammoth", region: "red", extinct: true, lifeExpectancy: 1 },
       ]
 
-      // Delete all fruits
+      // Delete all animals
       Animal.deleteMany({}, (err, data) => {
         // Create new fruits once old fruits are deleted
         Animal.create(startingAnimals, (err, data) =>{
 
             console.log(data)
+            res.json(data)
 
         })
 

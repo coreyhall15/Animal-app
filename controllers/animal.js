@@ -18,7 +18,27 @@ const router = express.Router()//Will have all routes attatched
 //})
 
 router.get('/seed', (req, res)=> {
-    
+    // define data we want to put in the database
+    const startingAnimals =  [
+        { name: "Lion", region: "Africa", extinct: false, lifeExpectancy: 1 },
+        { name: "Elephant", region: "Africa", extinct: false, lifeExpectancy: 1 },
+        { name: "Bald Eagle", region: "United States", extinct: false, lifeExpectancy: 1 },
+        { name: "Alligator", region: "United States", extinct: false, lifeExpectancy: 1 },
+        { name: "Tyrannosaurus", region: "Africa", extinct: true, lifeExpectancy: 1 },
+        { name: "Mammoth", region: "Egypt", extinct: true, lifeExpectancy: 1 },
+      ]
+
+      // Delete all animals
+      Animal.deleteMany({}, (err, data) => {
+        // Create new fruits once old fruits are deleted
+        Animal.create(startingAnimals, (err, data) =>{
+
+            console.log(data)
+            res.json(data)
+
+        })
+
+      })
 })
 
 
@@ -28,7 +48,7 @@ router.get('/', (req, res) => {
     Animal.find({}) 
         .then((animals) => {
             //res.json(fruits)
-            res.render('animalss/index.ejs', {animals})
+            res.render('animals/index.ejs', {animals})
         })
     
 })
@@ -40,8 +60,8 @@ router.get("/new", (req, res) => {
 
 //post route
 router.post('/' , (req, res) =>{
-    req.body.readyToEat = req.body.readyToEat === 'on' ? true : false
-    Fruit.create(req.body, (err, createdAnimal) =>{
+    req.body.extinct = req.body.extinct === 'on' ? true : false
+    Animal.create(req.body, (err, createdAnimal) =>{
         console.log(createdAnimal)
         res.redirect('/animals')
     })
@@ -67,9 +87,9 @@ router.get("/:id/edit", (req, res) => {
 router.put("/:id", (req, res) => {
     // get the id from params
     const id = req.params.id
-    // check if the readyToEat property should be true or false
-    req.body.readyToEat = req.body.readyToEat === "on" ? true : false
-    // update the fruit
+    // check if the animal is extinct true or false
+    req.body.extinct = req.body.extinct === "on" ? true : false
+    // update the animal
     Animal.findByIdAndUpdate(id, req.body, {new: true}, (err, updatedAnimal) => {
         // redirect user back to main page when fruit 
         res.redirect(`/animals`)
@@ -78,7 +98,7 @@ router.put("/:id", (req, res) => {
 
 //Get ID route
 router.get('/:id', (req, res) => {
-   //go and get fruit from database
+   //go and get animal from database
     Animal.findById(req.params.id)
     .then((animal) =>{
         res.render('animals/show.ejs', {animal})
@@ -89,7 +109,7 @@ router.get('/:id', (req, res) => {
 router.delete("/:id", (req, res) => {
     // get the id from params
     const id = req.params.id
-    // delete the fruit
+    // delete the animal
     Animal.findByIdAndRemove(id, (err, animal) => {
         // redirect user back to index page
         res.redirect("/animals")
